@@ -1,2 +1,2 @@
 - Bruce Tate
-- 
+- Dan Bickford
