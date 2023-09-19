@@ -1,2 +1,3 @@
 - Bruce Tate
 - Dan Bickford
+- Paul Henrich
