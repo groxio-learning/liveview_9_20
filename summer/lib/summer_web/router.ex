@@ -17,6 +17,7 @@ defmodule SummerWeb.Router do
   scope "/", SummerWeb do
     pipe_through :browser
 
+    live "/counter", CounterLive, :counter
     get "/", PageController, :home
   end
 
