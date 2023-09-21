@@ -4,9 +4,25 @@ defmodule SummerWeb.CounterLive do
 
   def render(assigns) do
     ~H"""
+      <div>
+        <.counter counter={@counter}>
+          Clicks
+        </.counter>
+      </div>
+    """
+  end
+
+  attr :counter, Counter, required: true
+  slot :inner_block
+  def counter(assigns) do
+    ~H"""
       <button class="border border-1" phx-click="inc">
+        <%= render_slot(@inner_block) %>
         <%= Counter.show(@counter) %>
       </button>
+      <pre>
+        <%= inspect(assigns, pretty: true) %>
+      </pre>
     """
   end
 
