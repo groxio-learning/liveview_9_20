@@ -2,6 +2,7 @@ defmodule SummerWeb.CounterComponent do
   use SummerWeb, :live_component
   alias Summer.Counter
 
+  attr :counter, Counter, required: true
   slot :inner_block
 
   def render(assigns) do
@@ -17,7 +18,7 @@ defmodule SummerWeb.CounterComponent do
     {:ok, assign(socket, :counter, Counter.new)}
   end
 
-  def handle_event(_event, _params, socket) do
+  def handle_event("clicked", _params, socket) do
     %{counter: counter} = socket.assigns
 
     {:noreply, assign(socket, :counter, Counter.inc(counter))}
