@@ -11,7 +11,7 @@ defmodule Summer.Application do
       # Start the Telemetry supervisor
       SummerWeb.Telemetry,
       # Start the Ecto repository
-      # Summer.Repo,
+      Summer.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Summer.PubSub},
       # Start Finch

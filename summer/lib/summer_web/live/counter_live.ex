@@ -1,12 +1,17 @@
 defmodule SummerWeb.CounterLive do
+  alias SummerWeb.CounterComponent
   use SummerWeb, :live_view
   alias Summer.Counter
 
   def render(assigns) do
     ~H"""
-      <button class="border border-1" phx-click="inc">
-        <%= Counter.show(@counter) %>
-      </button>
+      <.live_component module={CounterComponent} id="one">
+        First
+      </.live_component>
+
+      <.live_component module={CounterComponent} id="two">
+        Second
+      </.live_component>
     """
   end
 
