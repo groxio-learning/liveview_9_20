@@ -70,7 +70,7 @@ defmodule GameWeb.Router do
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
 
       live "/done", GameLive, :done
-      live "/game", GameLive, :game
+      live "/game/:id", GameLive, :game
 
       live "/readings", ReadingLive.Index, :index
       live "/readings/new", ReadingLive.Index, :new
@@ -78,6 +78,9 @@ defmodule GameWeb.Router do
 
       live "/readings/:id", ReadingLive.Show, :show
       live "/readings/:id/show/edit", ReadingLive.Show, :edit
+
+       live "/welcome", WelcomeLive
+
     end
   end
 
