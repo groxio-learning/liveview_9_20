@@ -1,0 +1,43 @@
+<.header>
+  Listing Readings
+  <:actions>
+    <.link patch={~p"/readings/new"}>
+      <.button>New Reading</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="readings"
+  rows={@streams.readings}
+  row_click={fn {_id, reading} -> JS.navigate(~p"/readings/#{reading}") end}
+>
+  <:col :let={{_id, reading}} label="Name"><%= reading.name %></:col>
+  <:col :let={{_id, reading}} label="Text"><%= reading.text %></:col>
+  <:col :let={{_id, reading}} label="Steps"><%= reading.steps %></:col>
+  <:action :let={{_id, reading}}>
+    <div class="sr-only">
+      <.link navigate={~p"/readings/#{reading}"}>Show</.link>
+    </div>
+    <.link patch={~p"/readings/#{reading}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, reading}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: reading.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="reading-modal" show on_cancel={JS.patch(~p"/readings")}>
+  <.live_component
+    module={GameWeb.ReadingLive.FormComponent}
+    id={@reading.id || :new}
+    title={@page_title}
+    action={@live_action}
+    reading={@reading}
+    patch={~p"/readings"}
+  />
+</.modal>
