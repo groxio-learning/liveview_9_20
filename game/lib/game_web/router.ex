@@ -18,6 +18,9 @@ defmodule GameWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/game", GameLive, :game
+    live "/done", GameLive, :done
   end
 
   # Other scopes may use custom stacks.
