@@ -68,8 +68,16 @@ defmodule GameWeb.Router do
       on_mount: [{GameWeb.UserAuth, :ensure_authenticated}] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
       live "/done", GameLive, :done
       live "/game", GameLive, :game
+
+      live "/readings", ReadingLive.Index, :index
+      live "/readings/new", ReadingLive.Index, :new
+      live "/readings/:id/edit", ReadingLive.Index, :edit
+
+      live "/readings/:id", ReadingLive.Show, :show
+      live "/readings/:id/show/edit", ReadingLive.Show, :edit
     end
   end
 
