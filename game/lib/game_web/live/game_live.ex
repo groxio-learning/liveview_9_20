@@ -10,16 +10,14 @@ defmodule GameWeb.GameLive do
     <button :if={@live_action == :game} phx-click="erase" class="w-32 border border-2">
       Erase
     </button>
-
-    <pre>
-      <%= inspect(assigns, pretty: true) %>
-    </pre>
     """
   end
 
-  def mount(_params, _session, socket) do
+  def mount(%{"id" => id}, _session, socket) do
+    reading = Game.Library.get_reading! id
+
     socket = assign(socket,
-      game: Game.new("Have you tried restarting it?", 3)
+      game: Game.new(reading.text, reading.steps)
     )
 
     {:ok, socket}
