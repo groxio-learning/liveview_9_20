@@ -3,10 +3,10 @@ defmodule Game do
     length = String.length(sentence)
     chunk_size = (length / steps) |> ceil
     steps = randomize.(1..length) |> Enum.chunk_every(chunk_size)
-    %{original: sentence, sentence: sentence, steps: steps}
+    %{original: sentence, sentence: sentence, steps: steps, score: 0}
   end
 
-  def erase(game) do
+  def guess(game, user_guess) do
     sentence = String.graphemes(game.sentence) |> Enum.with_index(1)
     [step | tail] = game.steps
     # sentence {"a", 0}, {"b", 1}, {"c", 2}
@@ -25,6 +25,16 @@ defmodule Game do
 
   def show(game) do
     game.sentence
+  end
+
+  def score(guess, sentence) do
+    matched_score = String.myers_difference(guess, sentence)
+    |> IO.inspect
+    |> Enum.map(fn
+      { :eq, s } -> String.length(s)
+      { _, s } -> 0
+    end)
+    |> Enum.sum
   end
 
 end
