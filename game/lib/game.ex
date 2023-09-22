@@ -1,8 +1,8 @@
 defmodule Game do
-  def new(sentence, steps) do
+  def new(sentence, steps, randomize \\ &Enum.shuffle/1) do
     length = String.length(sentence)
     chunk_size = (length / steps) |> ceil
-    steps = Enum.shuffle(1..length) |> Enum.chunk_every(chunk_size)
+    steps = randomize.(1..length) |> Enum.chunk_every(chunk_size)
     %{original: sentence, sentence: sentence, steps: steps}
   end
 
