@@ -8,12 +8,25 @@ defmodule Highscore do
 
   def show(pid \\ :hs) do
     GenServer.call(pid, :show)
+    |> convert()
+  end
+
+  def add(pid \\ :hs, email, score) do
+    scores = GenServer.call(pid, {:add, email, score}) |> convert()
+
+    Phoenix.PubSub.broadcast(Game.PubSub, topic(), {:new_scores, scores})
+
+    scores
+  end
+
+  def convert(scores) do
+    scores
     |> Enum.sort_by(fn {_key, val} -> -val end)
     |> Enum.take(5)
   end
 
-  def add(pid \\ :hs, email, score) do
-    GenServer.cast(pid, {:add, email, score})
+  def topic do
+    "highscores"
   end
 
   # Callbacks
@@ -29,9 +42,9 @@ defmodule Highscore do
   end
 
   @impl true
-  def handle_cast({:add, email, score}, scores) do
+  def handle_call({:add, email, score}, _from, scores) do
     new_state = Map.put(scores, email, score)
-    {:noreply, new_state}
+    {:reply, new_state, new_state}
   end
 
 end

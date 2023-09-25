@@ -10,6 +10,10 @@ defmodule GameWeb.GameLive do
       <%= @game.score %>
     </div>
 
+    <div id="scoreboard">
+      <%= inspect @scoreboard, pretty: true %>
+    </div>
+
     <.simple_form
       for={@form}
       id="guess-form"
@@ -29,7 +33,10 @@ defmodule GameWeb.GameLive do
 
     socket = assign(socket,
       game: Game.new(reading.text, reading.steps),
+      scoreboard: Highscore.show()
     )
+
+    Phoenix.PubSub.subscribe(Game.PubSub, Highscore.topic())
 
     {:ok, socket |> clear_form() }
   end
@@ -41,17 +48,13 @@ defmodule GameWeb.GameLive do
   end
 
   def handle_params(_params, _url, socket) do
-    {:noreply, socket}
-  end
+    email = socket.assigns.current_user.email
+    score = socket.assigns.game.score
 
-  def handle_event("erase", _params, socket) do
-    %{game: game} = socket.assigns
-
-    socket = case game do
-      %{steps: []} -> push_patch(socket, to: ~p"/done")
-      game ->
-        game = Game.erase(game)
-        assign(socket, :game, game)
+    socket = cond do
+      socket.assigns.live_action == :done ->
+        assign(socket, :scoreboard, Highscore.add(email, score))
+      true -> socket
     end
 
     {:noreply, socket}
@@ -64,7 +67,18 @@ defmodule GameWeb.GameLive do
 
   def handle_event("guess", params, socket) do
     changes = params["game"] |> changeset()
-    {:noreply, guess(socket, changes) |> clear_form() }
+
+    socket = case socket.assigns.game do
+      %{steps: []} -> push_patch(socket, to: ~p"/done")
+      game -> guess(socket, changes)
+    end |> clear_form()
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:new_scores, scores}, socket) do
+
+    {:noreply, assign(socket, :scoreboard, scores)}
   end
 
   defp guess(socket, changeset) do

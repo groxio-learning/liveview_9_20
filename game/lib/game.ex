@@ -23,7 +23,7 @@ defmodule Game do
     %{game |
       steps: tail,
       sentence: new_sentence,
-      score: score(user_guess, game.sentence)}
+      score: game.score + score(user_guess, game.sentence)}
   end
 
   def show(game) do
