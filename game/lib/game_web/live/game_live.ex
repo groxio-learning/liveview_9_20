@@ -10,6 +10,10 @@ defmodule GameWeb.GameLive do
     <button :if={@live_action == :game} phx-click="erase" class="w-32 border border-2">
       Erase
     </button>
+
+    <pre>
+      <%= inspect @form, pretty: true %>
+    </pre>
     """
   end
 
@@ -17,7 +21,8 @@ defmodule GameWeb.GameLive do
     reading = Game.Library.get_reading! id
 
     socket = assign(socket,
-      game: Game.new(reading.text, reading.steps)
+      game: Game.new(reading.text, reading.steps),
+      form: form_changeset(%{})
     )
 
     {:ok, socket}
@@ -38,5 +43,12 @@ defmodule GameWeb.GameLive do
     end
 
     {:noreply, socket}
+  end
+
+  def form_changeset(params) do
+    {%{guess: nil}, %{guess: :string}}
+    |> Ecto.Changeset.cast(params, [:guess])
+    |> Ecto.Changeset.validate_length(:guess, min: 4)
+    |> to_form(as: :game)
   end
 end
