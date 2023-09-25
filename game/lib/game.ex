@@ -20,7 +20,10 @@ defmodule Game do
       end)
       |> Enum.join
 
-    %{game | steps: tail, sentence: new_sentence}
+    %{game |
+      steps: tail,
+      sentence: new_sentence,
+      score: score(user_guess, game.sentence)}
   end
 
   def show(game) do

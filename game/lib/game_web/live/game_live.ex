@@ -6,14 +6,21 @@ defmodule GameWeb.GameLive do
     <div class="text-xl">
       <%= Game.show(@game) %>
     </div>
+    <div class="text-xl">
+      <%= @game.score %>
+    </div>
 
-    <button :if={@live_action == :game} phx-click="erase" class="w-32 border border-2">
-      Erase
-    </button>
+    <.simple_form
+      for={@form}
+      id="guess-form"
+      phx-change="validate"
+      phx-submit="guess">
+        <.input field={@form[:guess]} type="text" label="Guess" />
+        <:actions>
+          <.button phx-disable-with="Checking...">Guess</.button>
+        </:actions>
+    </.simple_form>
 
-    <pre>
-      <%= inspect @form, pretty: true %>
-    </pre>
     """
   end
 
@@ -22,10 +29,15 @@ defmodule GameWeb.GameLive do
 
     socket = assign(socket,
       game: Game.new(reading.text, reading.steps),
-      form: form_changeset(%{})
     )
 
-    {:ok, socket}
+    {:ok, socket |> clear_form() }
+  end
+
+  defp clear_form(socket) do
+    assign(socket,
+      form: changeset(%{}) |> build_form()
+    )
   end
 
   def handle_params(_params, _url, socket) do
@@ -45,10 +57,35 @@ defmodule GameWeb.GameLive do
     {:noreply, socket}
   end
 
-  def form_changeset(params) do
+  def handle_event("validate", params, socket) do
+    updated = params["game"] |> changeset() |> build_form()
+    {:noreply, assign(socket, :form, updated)}
+  end
+
+  def handle_event("guess", params, socket) do
+    changes = params["game"] |> changeset()
+    {:noreply, guess(socket, changes) |> clear_form() }
+  end
+
+  defp guess(socket, changeset) do
+   if changeset.valid? do
+      guess = Ecto.Changeset.get_field(changeset, :guess)
+      game = Game.guess(socket.assigns.game, guess)
+      assign(socket, game: game)
+    else
+      put_flash(socket, :error, "Type more")
+    end
+  end
+
+
+  def changeset(params) do
     {%{guess: nil}, %{guess: :string}}
     |> Ecto.Changeset.cast(params, [:guess])
     |> Ecto.Changeset.validate_length(:guess, min: 4)
-    |> to_form(as: :game)
+    |> struct!(action: :validate)
+  end
+
+  def build_form(changeset) do
+    changeset |> to_form(as: :game)
   end
 end
