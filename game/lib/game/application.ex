@@ -8,6 +8,8 @@ defmodule Game.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      # Start Highscore
+      Highscore,
       # Start the Telemetry supervisor
       GameWeb.Telemetry,
       # Start the Ecto repository
