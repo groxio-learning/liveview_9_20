@@ -1,4 +1,5 @@
 - Bruce Tate
+- Ghassan Hallaq
 - Dan Bickford
 - Harold Daniel
 - Paul Henrich
